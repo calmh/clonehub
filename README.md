@@ -1,7 +1,7 @@
 clonehub
 ========
 
-Keep a local mirror of all public GitHub repositories
+Keep a local mirror of all your (or someone elses) public GitHub repositories.
 
 Usage
 -----
