@@ -16,13 +16,13 @@ def get_repos(user):
 
 def git_fetch(repo):
     print ' . Fetching %s' % repo
-    s, o = commands.getstatusoutput('cd %s ; git fetch --all' % repo)
+    s, o = commands.getstatusoutput('cd %s ; git remote update' % repo)
     if s != 0:
         raise GitError(o)
 
 def git_clone(repo):
     print ' + Cloning %s' % repo
-    s, o = commands.getstatusoutput('git clone --bare %s' % repo)
+    s, o = commands.getstatusoutput('git clone --mirror %s' % repo)
     if s != 0:
         raise GitError(o)
 

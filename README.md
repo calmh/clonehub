@@ -22,6 +22,8 @@ Backing up calmh
 ...
 ```
 
+Cron it, and live happily everafter.
+
 License
 -------
 
