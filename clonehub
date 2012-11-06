@@ -30,10 +30,10 @@ def backup_all(user):
     print 'Backing up %s' % user
     repos = get_repos(user)
     for repo in repos:
-        name = repo['name']
+        local = repo['name'] + '.git'
         url = repo['clone_url']
-        if os.path.exists(name + '.git'):
-            git_fetch(name + '.git')
+        if os.path.exists(local):
+            git_fetch(local)
         else:
             git_clone(url)
 
