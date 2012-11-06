@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+
+import commands
+import json
+import os
+import sys
+import urllib2
+
+class GitError(Exception):
+    pass
+
+def get_repos(user):
+    apidata = urllib2.urlopen('https://api.github.com/users/%s/repos' % user).read()
+    repos = json.loads(apidata)
+    return repos
+
+def git_fetch(repo):
+    print 'Pulling %s' % repo
+    s, o = commands.getstatusoutput('cd %s ; git fetch --all' % repo)
+    if s != 0:
+        raise GitError(o)
+
+def git_clone(repo):
+    print 'Cloning %s' % repo
+    s, o = commands.getstatusoutput('git clone --bare %s' % repo)
+    if s != 0:
+        raise GitError(o)
+
+def backup_all(user):
+    print 'Backing up %s' % user
+    repos = get_repos(user)
+    for repo in repos:
+        name = repo['name']
+        url = repo['clone_url']
+        if os.path.exists(name + '.git'):
+            git_fetch(name + '.git')
+        else:
+            git_clone(url)
+
+if len(sys.argv) < 2:
+    print "usage: %s <username> [username ...]"
+    print "  Mirror all public repositories from one or more GitHub users"
+else:
+    for user in sys.argv[1:]:
+        backup_all(user)
+
