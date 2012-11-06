@@ -38,7 +38,7 @@ def backup_all(user):
             git_clone(url)
 
 if len(sys.argv) < 2:
-    print "usage: %s <username> [username ...]"
+    print "usage: %s <username> [username ...]" % os.path.basename(sys.argv[0])
     print "  Mirror all public repositories from one or more GitHub users"
     sys.exit(-1)
 
