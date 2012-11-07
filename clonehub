@@ -18,15 +18,20 @@ def command(cmd):
     s, o = commands.getstatusoutput(cmd)
     if s != 0:
         raise CommandError(str(s) + ': ' + o)
-    return o
+    lines = o.split('\n')
+    for line in lines:
+        if line.find('FETCH_HEAD'):
+            continue
+        if line.find('->'):
+            print line
 
 def git_fetch(repo):
     print ' . Fetching %s' % repo
-    return command('cd %s ; git remote update' % repo)
+    command('cd %s ; git remote update -p' % repo)
 
 def git_clone(repo):
     print ' + Cloning %s' % repo
-    return command('git clone --mirror %s' % repo)
+    command('git clone --mirror %s' % repo)
 
 def backup_all(user):
     print 'Backing up %s' % user
