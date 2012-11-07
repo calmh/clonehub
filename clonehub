@@ -6,7 +6,7 @@ import os
 import sys
 import urllib2
 
-class GitError(Exception):
+class CommandError(Exception):
     pass
 
 def get_repos(user):
@@ -14,17 +14,19 @@ def get_repos(user):
     repos = json.loads(apidata)
     return repos
 
+def command(cmd):
+    s, o = commands.getstatusoutput(cmd)
+    if s != 0:
+        raise CommandError(str(s) + ': ' + o)
+    return o
+
 def git_fetch(repo):
     print ' . Fetching %s' % repo
-    s, o = commands.getstatusoutput('cd %s ; git remote update' % repo)
-    if s != 0:
-        raise GitError(o)
+    return command('cd %s ; git remote update' % repo)
 
 def git_clone(repo):
     print ' + Cloning %s' % repo
-    s, o = commands.getstatusoutput('git clone --mirror %s' % repo)
-    if s != 0:
-        raise GitError(o)
+    return command('git clone --mirror %s' % repo)
 
 def backup_all(user):
     print 'Backing up %s' % user
