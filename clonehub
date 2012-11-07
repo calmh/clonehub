@@ -20,9 +20,9 @@ def command(cmd):
         raise CommandError(str(s) + ': ' + o)
     lines = o.split('\n')
     for line in lines:
-        if line.find('FETCH_HEAD'):
+        if line.find('FETCH_HEAD') >= 0:
             continue
-        if line.find('->'):
+        if line.find('->') >= 0:
             print line
 
 def git_fetch(repo):
