@@ -31,17 +31,25 @@ def git_fetch(repo):
 
 def git_clone(repo):
     print ' + Cloning %s' % repo
-    command('git clone --mirror %s' % repo)
+    if args.checkout:
+        mirror = ''
+    else:
+        mirror = '--mirror'
+    command('git clone %s %s' % (mirror, repo))
 
-def backup_all(user, use_ssh):
+def backup_all(user):
     print 'Backing up %s' % user
     repos = get_repos(user)
     for repo in repos:
-        local = repo['name'] + '.git'
-        if use_ssh:
+        local = repo['name']
+        if not args.checkout:
+            local = local + '.git'
+
+        if args.ssh:
             url = repo['ssh_url']
         else:
             url = repo['clone_url']
+
         if os.path.exists(local):
             git_fetch(local)
         else:
@@ -50,9 +58,10 @@ def backup_all(user, use_ssh):
 parser = argparse.ArgumentParser()
 parser.add_argument('users', help='A user to back up repos for', metavar='USER', nargs='+')
 parser.add_argument('-s', '--ssh', help='Clone using SSH instead of anonymous HTTPS', action='store_true')
+parser.add_argument('-c', '--checkout', help='Clone to a regular repository instead of a bare one', action='store_true')
 parser.parse_args()
 args = parser.parse_args()
 
 for user in args.users:
-    backup_all(user, args.ssh)
+    backup_all(user)
 
