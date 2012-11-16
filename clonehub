@@ -4,14 +4,28 @@ import argparse
 import commands
 import json
 import os
+import re
 import urllib2
 
 class CommandError(Exception):
     pass
 
-def get_repos(user):
-    apidata = urllib2.urlopen('https://api.github.com/users/%s/repos' % user).read()
-    repos = json.loads(apidata)
+def get_repos(user=None, url=None):
+    if not user and not url:
+        raise ValueError('Need either user or url')
+    if user and not url:
+        url = 'https://api.github.com/users/%s/repos' % user
+
+    apidata = urllib2.urlopen(url)
+    repos = json.loads(apidata.read())
+
+    if 'Link' in apidata.info():
+        links = apidata.info()['Link']
+        pm = re.search('<(http[^>]+)>;\s*rel="next"', links)
+        if pm:
+            next = pm.group(1)
+            repos.extend(get_repos(url=next))
+
     return repos
 
 def command(cmd):
