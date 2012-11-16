@@ -3,6 +3,11 @@ clonehub
 
 Keep a local mirror of all your (or someone elses) public GitHub repositories.
 
+Install
+-------
+
+    sudo pip install clonehub
+
 Usage
 -----
 
