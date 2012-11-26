@@ -16,7 +16,11 @@ def get_repos(user=None, url=None):
     if user and not url:
         url = 'https://api.github.com/users/%s/repos' % user
 
-    apidata = urllib2.urlopen(url)
+    try:
+        apidata = urllib2.urlopen(url)
+    except urllib2.HTTPError, e:
+        print ' * GitHub API error: %d %s' % (e.code, e.msg)
+        return []
     repos = json.loads(apidata.read())
 
     if 'Link' in apidata.info():
