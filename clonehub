@@ -7,9 +7,6 @@ import os
 import re
 import urllib2
 
-class CommandError(Exception):
-    pass
-
 def get_repos(user=None, url=None):
     if not user and not url:
         raise ValueError('Need either user or url')
@@ -35,7 +32,9 @@ def get_repos(user=None, url=None):
 def command(cmd):
     s, o = commands.getstatusoutput(cmd)
     if s != 0:
-        raise CommandError(str(s) + ': ' + o)
+        for line in o.split('\n'):
+            print '   * ' + line
+        return
     lines = o.split('\n')
     for line in lines:
         if line.find('FETCH_HEAD') >= 0:
