@@ -1,40 +1,15 @@
 #!/usr/bin/env python
 
 import argparse
-import json
 import os
-import re
-import urllib2
 
 import git
-
-
-def get_repos(user=None, url=None):
-    if not user and not url:
-        raise ValueError('Need either user or url')
-    if user and not url:
-        url = 'https://api.github.com/users/%s/repos' % user
-
-    try:
-        apidata = urllib2.urlopen(url)
-    except urllib2.HTTPError, e:
-        print ' * GitHub API error: %d %s' % (e.code, e.msg)
-        return []
-    repos = json.loads(apidata.read())
-
-    if 'Link' in apidata.info():
-        links = apidata.info()['Link']
-        pm = re.search('<(http[^>]+)>;\s*rel="next"', links)
-        if pm:
-            next = pm.group(1)
-            repos.extend(get_repos(url=next))
-
-    return repos
+import github
 
 
 def backup_all(user):
     print 'Backing up %s' % user
-    repos = get_repos(user)
+    repos = github.repos(user)
     for repo in repos:
         local = repo['name']
         if not args.checkout:
