@@ -20,11 +20,11 @@ def fetch(repo):
     _command('cd %s ; git remote update -p' % repo)
 
 
-def clone(repo, checkout=False):
+def clone(repo, dst, checkout=False):
     print ' + Cloning %s' % repo
     if checkout:
         mirror = ''
     else:
         mirror = '--mirror'
-    _command('git clone %s %s' % (mirror, repo))
+    _command('git clone %s %s %s' % (mirror, repo, dst))
 

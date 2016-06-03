@@ -25,13 +25,30 @@ def backup_all(user):
         else:
             git.clone(url, args.checkout)
 
+def backup_mine():
+    print 'Backing up all accessible repos, including private ones'
+    repos = github.my_repos()
+    for repo in repos:
+        local = repo['full_name']
+        if not args.checkout:
+            local = local + '.git'
+
+        url = repo['ssh_url']
+        if os.path.exists(local):
+            git.fetch(local)
+        else:
+            git.clone(url, local, args.checkout)
+
 parser = argparse.ArgumentParser()
-parser.add_argument('users', help='A user to back up repos for', metavar='USER', nargs='+')
+parser.add_argument('users', help='A user to back up repos for; empty for all accessible', metavar='USER', nargs='*')
 parser.add_argument('-s', '--ssh', help='Clone using SSH instead of anonymous HTTPS', action='store_true')
 parser.add_argument('-c', '--checkout', help='Clone to a regular repository instead of a bare one', action='store_true')
 parser.parse_args()
 args = parser.parse_args()
 
-for user in args.users:
-    backup_all(user)
+if len(args.users) == 0:
+    backup_mine()
+else:
+    for user in args.users:
+        backup_all(user)
 

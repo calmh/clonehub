@@ -1,11 +1,21 @@
 import re
 import json
 import urllib2
+import base64
+import os
 
 
 def _repos(url):
     try:
-        apidata = urllib2.urlopen(url)
+        req = urllib2.Request(url)
+        try:
+            username = os.environ['GITHUB_USERNAME']
+            token = os.environ['GITHUB_TOKEN']
+            base64string = base64.encodestring('%s:%s' % (username, token)).replace('\n', '')
+            req.add_header('Authorization', 'Basic ' + base64string)
+        except NameError:
+            pass
+        apidata = urllib2.urlopen(req)
     except urllib2.HTTPError, e:
         print ' * GitHub API error: %d %s' % (e.code, e.msg)
         return []
@@ -24,3 +34,5 @@ def _repos(url):
 def repos(user):
     return _repos('https://api.github.com/users/%s/repos' % user)
 
+def my_repos():
+    return _repos('https://api.github.com/user/repos')
