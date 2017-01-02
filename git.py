@@ -28,3 +28,7 @@ def clone(repo, dst, checkout=False):
         mirror = '--mirror'
     _command('git clone %s %s %s' % (mirror, repo, dst))
 
+
+def gc(repo):
+    print ' . Garbage collecting %s' % repo
+    _command('cd %s ; git gc' % repo)

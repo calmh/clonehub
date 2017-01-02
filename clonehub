@@ -12,6 +12,10 @@ def backup_all(user):
     repos = github.repos(user)
     for repo in repos:
         local = repo['name']
+        if args.ignore and local in args.ignore:
+            print ' - Ignoring %s' % local
+            continue
+
         if not args.checkout:
             local = local + '.git'
 
@@ -25,11 +29,18 @@ def backup_all(user):
         else:
             git.clone(url, args.checkout)
 
+        if args.garbage_collect:
+            git.gc(local)
+
 def backup_mine():
     print 'Backing up all accessible repos, including private ones'
     repos = github.my_repos()
     for repo in repos:
         local = repo['full_name']
+        if args.ignore and repo['name'] in args.ignore:
+            print ' - Ignoring %s' % local
+            continue
+
         if not args.checkout:
             local = local + '.git'
 
@@ -39,10 +50,15 @@ def backup_mine():
         else:
             git.clone(url, local, args.checkout)
 
+        if args.garbage_collect:
+            git.gc(local)
+
 parser = argparse.ArgumentParser()
 parser.add_argument('users', help='A user to back up repos for; empty for all accessible', metavar='USER', nargs='*')
 parser.add_argument('-s', '--ssh', help='Clone using SSH instead of anonymous HTTPS', action='store_true')
 parser.add_argument('-c', '--checkout', help='Clone to a regular repository instead of a bare one', action='store_true')
+parser.add_argument('-g', '--garbage-collect', help='Garbage collect repository after clone', action='store_true')
+parser.add_argument('-i', '--ignore', help='Ignore REPO. Can be specified multiple times', metavar='REPO', action='append')
 parser.parse_args()
 args = parser.parse_args()
 
