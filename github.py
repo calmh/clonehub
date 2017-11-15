@@ -23,7 +23,7 @@ def _repos(url):
 
     if 'Link' in apidata.info():
         links = apidata.info()['Link']
-        pm = re.search('<(http[^>]+)>;\s*rel="next"', links)
+        pm = re.search(r'<(http[^>]+)>;\s*rel="next"', links)
         if pm:
             next = pm.group(1)
             repos.extend(_repos(next))
